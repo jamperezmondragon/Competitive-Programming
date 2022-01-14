@@ -1,7 +1,11 @@
+/*
+* AC:
+* https://evaluator.hsin.hr/tasks/HONI060711modulo/
+*/
 #include <bits/stdc++.h>
 using namespace std;
 //debuging
-bool debug = true;
+bool debug = false;
 #define DEBUG if (debug)
 
 
