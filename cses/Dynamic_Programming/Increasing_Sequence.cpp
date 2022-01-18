@@ -6,9 +6,9 @@ const bool DEB = false;
 #define DEBUG if (DEB) 
 /* Informative
 * ==============
-* Status: 
+* Status: AC
 * link del problema: https://cses.fi/problemset/task/1145
-* submission: 
+* submission: https://cses.fi/problemset/result/3401259/
 */
 /*
 * Comments
