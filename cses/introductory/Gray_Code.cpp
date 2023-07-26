@@ -1,25 +1,17 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long ll;
-#define PB push_Back
- 
+
 int main() {
-  cin.tie(0);
-  cout.tie(0);
-  ios_base::sync_with_stdio(0);
-  int n;
-  cin >> n;
-  for (ll i = 0; i < (1<<n); i++) {
-    int temp = (i^(i>>1));
-    for (int j=0; j < n; j++) {
-      if (temp%2) {
-        cout << 1;
-        temp = (temp - 1)/2;
-      } else {
-        cout << 0;
-        temp /= 2;
-      }
+  int n; cin >> n; vector<int> ans(1, 0);
+  for (int i = 0; i < n; i++) {
+    for (int j = (int)ans.size() - 1; j >= 0; j--) {
+      ans.push_back(ans[j] + (1<<i));
     }
-    cout << "\n";
+  }
+  for (int e : ans) {
+    for (int i = 0; i < n; i++, e >>= 1) {
+      putchar_unlocked((e&1) + '0'); 
+    }
+    putchar_unlocked('\n');
   }
 }

@@ -1,33 +1,33 @@
 #include <bits/stdc++.h>
 using namespace std;
-string respuesta, rev, entrada, abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-char ch;
-int j=0, r;
- 
-int checar(char s, string entrada) {
-  int i=0;
-  for (char t : entrada) if (t == s) i++;
-  return i;
-}
+
 int main() {
-   cin >> entrada;
-  for (char s : abc) {
-    int tot=checar(s, entrada);
-    if (tot == 0) continue;
-    if (tot%2 != 0) {
-      j++;
-      ch = s;
-      r = tot;
-    }
-    else for (int t=0; t<tot/2; t++) respuesta += s;
-    if (j == 2) {
-      cout << "NO SOLUTION";
-      return 0;
-    }
+  string s; cin >> s;
+  int n = (int)s.size();
+  char ch = 'c';
+  map<char, int> mp;
+  int count[2] = {0, 0};
+  for (auto e : s) mp[e]++;
+  for (auto [x, y] : mp) {
+    if (y&1) ch = x;
+    count[y&1]++;
   }
-  rev = respuesta;
-  reverse(rev.begin(), rev.end());
-  for (int k=0; k < r; k++) respuesta += ch;
-  respuesta += rev;
-  cout << respuesta << "\n";
+  if (count[1] > 1) {
+    cout << "NO SOLUTION"; return 0;
+  }
+  sort(s.begin(), s.end());
+  for (int i = 0; i < n; i += 2) {
+    if (s[i] == ch) continue;
+    cout << s[i];
+  }
+  reverse(s.begin(), s.end());
+  for (int i = 0; i < mp[ch]; i++) {
+    cout << ch;
+  }
+  for (int i = 0; i < n; i += 2) {
+    if (s[i] == ch) continue;
+    cout << s[i];
+  }
+  cout << endl;
 }
+
