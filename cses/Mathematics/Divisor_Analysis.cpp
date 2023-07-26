@@ -1,45 +1,52 @@
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
+using ll = long long int;
+const ll MOD = 1e9 + 7;
+const int Mxn = 1e5 + 1;
 
-/* Informative
-* ==============
-* Status: 
-* link del problema:
-* submission:
-*/
-/*
-* Comments
-* =========
-*
-*
-*/
-/* Analisis
-* ==========
-*
-*
-*
-*/
-const int M = 1e9+7;
-ll expon(ll x, ll exp, ll ans = 1) {
-  for (ll i = 0, j = x; i < 33; i++, j = (j*j)%M) {
-    if (exp&(1<<i)) (ans *= j) %= M;
+ll binexpon(ll a, ll b, ll Mod = MOD, ll ans = 1LL) {
+  for (ll i = 0; i <= 31; i++, a *= a, a %= Mod) {
+    if ((b>>i)&1LL) {
+      ans *= a; ans %= Mod;
+    }
   }
-  return ans;
+  return ans%Mod;
 }
- 
-int main() {
-  cin.tie(nullptr); ios_base::sync_with_stdio(false);
-  int n; cin >> n;
+ll inverse(ll a) {return binexpon(a, MOD - 2LL);}
 
-  ll sum = 0, numdiv1 = 1, numdiv2 = 1, val = 1;
-  for (int i = 0; i < n; i++) {
-    ll p, e; cin >> p >> e;
-    (sum *= (expon(p, e + 1) - 1)*expon(p - 1, M - 2)) %= M;
-    (numdiv1 *= e + 1) %= M;
-    (numdiv2 *= e + 1) %= (M - 1);
-    (val *=  expon(p, e)) %= M;
+ll p[Mxn], e[Mxn];
+
+int main() {
+  cin.tie(0)->sync_with_stdio(0);
+  ll n; cin >> n; 
+  for (ll i = 0; i < n; i++) {
+    cin >> p[i] >> e[i];
   }
-  val = expon(val, numdiv2/2);
-  cout << numdiv1 << " " << sum << " " << val;
+  ll num = 1LL;
+  for (ll i = 0; i < n; i++) {
+    num *= binexpon(p[i], e[i]);
+    num %= MOD;
+  }
+  ll sum = 1LL;
+  for (ll i = 0; i < n; i++) {
+    sum *= binexpon(p[i], e[i] + 1LL) - 1LL;
+    sum %= MOD;
+    sum *= inverse(p[i] - 1LL);
+    sum %= MOD;
+  }
+  ll divcnt = 1LL;
+  for (ll i = 0; i < n; i++) {
+    divcnt *= (e[i] + 1LL);
+    divcnt %= MOD;
+  }
+  ll prod = 1LL, Divcnt = 1LL;
+  for (int i = 0; i < n; i++) {
+    prod = binexpon(prod, e[i] + 1);
+    prod %= MOD;
+    prod *= binexpon(p[i], (Divcnt*((e[i]*(e[i] + 1)/2)%(MOD - 1))%(MOD - 1)));
+    prod %= MOD;
+    Divcnt *= (e[i] + 1);
+    Divcnt %= (MOD - 1);
+  }
+  cout << divcnt << " " << sum << " " << prod;
 }
