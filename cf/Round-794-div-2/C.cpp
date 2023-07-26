@@ -1,0 +1,46 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using vi = vector<int>;
+using vl = vector<ll>;
+using pi = pair<int, int>;
+using vii = vector<vector<int>>;
+using mii = map<int, int>;
+#define in(a) for (auto &e : a) cin >> e
+#define sz(x) int((x).size())
+#define all(a) a.begin(), a.end()
+#define ptp partition_point
+#define F first
+#define S second
+#define Testcase ll t; cin >> t; while (t--)
+#define nl "\n"
+#define m_p make_pair
+ 
+int main() {
+  cin.tie(0); ios_base::sync_with_stdio(0);
+  Testcase {
+    int n; cin >> n; vi a(n); in(a); bool flag = true;
+    if (n&1) {
+      cout << "NO" << endl; continue; 
+    }
+    sort(all(a)); vi A(n);
+    for (int i = 0; i < n/2; i++) {
+      A[(2*i + 1)%n] = a[n/2 + i]; A[(2*i)%n] = a[i];
+    }
+    for (int i = 0; i < n; i++) {
+      bool aux = false;
+      if (A[i] > A[(i + 1)%n] && A[i] > A[(i + n - 1)%n])  aux |= true;
+      if (A[i] < A[(i + 1)%n] && A[i] < A[(i + n - 1)%n])  aux |= true;
+      if (!aux) flag = false;
+    }
+    if (flag) {
+      cout << "YES" << endl;
+      for (int i = 0; i < n; i++) {
+        cout << A[i] << " ";
+      }
+      cout << endl;
+    } else {
+      cout << "NO" << endl;
+    }
+  }
+}
