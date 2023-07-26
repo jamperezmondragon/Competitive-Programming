@@ -1,30 +1,41 @@
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
+int const Mxn = 2e5 + 1;
+int n, q, x, offset = 1;
+int Segs[4*Mxn];
 
-template<class T> struct SegTree {
-  int n; vector<T> segs; T ID = 0;
-  void init(int N) {n = N; segs.assign(2*n, ID);}
-  T comb(T a, T b) { return max(a, b); }
-  void upd(int i, T x) {
-    segs[i += n] = x; 
-    for (i /= 2; i; i /= 2) {
-      segs[i] = comb(segs[2*i], segs[2*i + 1]);
-    }
+void Push(int idx) {
+  Segs[idx] = max(Segs[2*idx], Segs[2*idx + 1]);
+}
+
+void Build_SegmentTree() {
+  for (int i = offset - 1; i > 0; i--) Push(i);
+}
+
+void query(int k, int idx = 1) {
+  if (k > Segs[idx]) {
+    cout << 0 << " "; return;
   }
-  T walk(T x, int i = 2) {
-    for (; i < 2*n; i *= 2) {
-      if (segs[i] < x) i++;
-      if (segs[i] < x) return 0;
-    }
-    update(i - n, segs[i] - x);
+  if (idx >= offset) {
+    cout << idx - offset + 1 << " ";
+    Segs[idx] -= k; return;
   }
-};
+  if (Segs[2*idx] >= k) query(k, 2*idx);
+  else query(k, 2*idx + 1);
+  Push(idx);
+}
+
+
 
 int main() {
-  cin.tie(nullptr); ios_base::sync_with_stdio(false);
-  int n, q; cin >> n >> q;
+  cin >> n >> q;
+  memset(Segs, 0, sizeof(Segs));
+  while (offset <= n) offset <<= 1;
+  for (int i = 0; i < n; i++) {
+    cin >> Segs[offset + i];
+  }
+  Build_SegmentTree();
   while (q--) {
-
+    cin >> x; query(x);
   }
 }
