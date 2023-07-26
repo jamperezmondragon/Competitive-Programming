@@ -1,50 +1,42 @@
 #include <bits/stdc++.h>
 using namespace std;
-/* Informative
-* ==============
-* Status: 
-* link del problema: 
-* submission:
-*/
-/*
-* Comments
-* =========
-*
-*/
-/* Analisis
-* ==========
-*
-*/
+int const Mxn = 1e5 + 10;
+int n, m, x, y;
+vector<vector<int>> Adj(Mxn);
 
-int main() {
-  cin.tie(0); ios_base::sync_with_stdio(0);
-  int n, m; cin >> n >> m; vector<int> prev(n + 1, 0), ans;
-  vector<vector<int>> adjlist(n + 1);
-  for (int i = 0; i < n; i++) {
-    int x, y; cin >> x >> y;
-    adjlist[x].push_back(y);
-    adjlist[y].push_back(x);
-  }
+void bfs() {
+  vector<int> parent(n + 1, -1), ans;
   queue<int> Q;
-  Q.push(1); prev[1] = 0;
+  parent[1] = 1; Q.push(1);
   while (!Q.empty()) {
-    int f = Q.front();
-    Q.pop();
-    for (auto e : adjlist[f]) {
-      if (prev[e] != 0) continue;
-      Q.push(e); prev[e] = f;
+    int node = Q.front(); 
+    for (auto child : Adj[node]) {
+      if (parent[child] != -1) continue;
+      parent[child] = node; Q.push(child);
     }
+    Q.pop();
   }
-  if (prev[n] == 0) {
-    cout << "IMPOSIBLE"; return 0;
-  } 
-  int curr = n;
-  while (curr != 1) {
-    ans.push_back(curr);
-    curr = prev[curr];
+  int aux = n;
+  if (parent[n] == -1) {
+    cout << "IMPOSSIBLE" << endl;
+    return;
+  }
+  while (aux != 1) {
+    ans.push_back(aux); aux = parent[aux];
   }
   ans.push_back(1);
   reverse(ans.begin(), ans.end());
-  cout << ans.size() << "\n";
+  cout << ans.size() << endl;
   for (auto e : ans) cout << e << " ";
+  return;
+}
+
+int main() {
+  cin >> n >> m;
+  for (int i = 1; i <= m; i++) {
+    cin >> x >> y;
+    Adj[x].push_back(y);
+    Adj[y].push_back(x);
+  }
+  bfs();
 }

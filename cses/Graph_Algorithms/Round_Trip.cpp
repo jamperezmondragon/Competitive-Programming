@@ -1,52 +1,43 @@
 #include <bits/stdc++.h>
 using namespace std;
-/* Informative
-* ==============
-* Status: 
-* link del problema: 
-* submission:
-*/
-/*
-* Comments
-* =========
-*
-*/
-/* Analisis
-* ==========
-*
-*/
-const int Mx = 1e5+5;
-vector<vector<int>> adjlist;
-int ans; int Prev[Mx]; bool vis[Mx]; bool flag = false;
+int const Mxn = 2e5 + 10;
+int n, m, x, y;
+vector<vector<int>> Adj(Mxn);
+bool vis[Mxn];
+vector<pair<int, int>> Back_Edges;
+int Parent[Mxn];
 
-void dfs(int node) {
-  if (vis[node]) {
-    ans = node; flag = true; return;
-  }
+
+
+void dfs(int node, int parent) {
+  Parent[node] = parent;
   vis[node] = true;
-  for (auto e : adjlist[node]) {
-    if (e == node) continue;
-    Prev[e] = node; dfs(e);
+  for (auto child : Adj[node]) {
+    if (child == parent) continue;
+    if (vis[child]) Back_Edges.push_back({node, child});
+    else dfs(child, node);
   }
 }
 
 int main() {
-  cin.tie(0); ios_base::sync_with_stdio(0);
-  int n, m; cin >> n >> m; adjlist.resize(n + 1);
-
+  cin >> n >> m;
   for (int i = 0; i < m; i++) {
-    int x, y; cin >> x >> y;
-    adjlist[x].push_back(y);
-    adjlist[y].push_back(x);
+    cin >> x >> y;
+    Adj[x].push_back(y);
+    Adj[y].push_back(x);
   }
-  for (int i = 0; i < n; i++) {
-    if (!vis[i]) dfs(i);
+  for (int i = 1; i <= n; i++) {
+    if (!vis[i]) dfs(i, 0);
   }
-  if (!flag) {
-    cout << "IMPOSSIBLE"; return 0;
+  if (!Back_Edges.size()) {
+    cout << "IMPOSSIBLE" << endl;
+    return 0;
   }
-  vector<int> vals = {ans}; int curr = Prev[ans];
-  while (curr != ans) vals.push_back(curr), curr = Prev[curr];
-  cout << (int)vals.size() << "\n";
-  for (auto e : vals) cout << e << " ";
+  int node = Back_Edges[0].first, parent = Back_Edges[0].second;
+  vector<int> ans; ans.push_back(parent);
+  while (node != Parent[parent]) {
+    ans.push_back(node); node = Parent[node];
+  }
+  cout << ans.size() << endl;
+  for (auto e : ans) cout << e << " ";
 }

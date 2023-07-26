@@ -1,95 +1,86 @@
 #include <bits/stdc++.h>
 using namespace std;
-/* Informative
-* ==============
-* Status: 
-* link del problema: 
-* submission:
-*/
-/*
-* Comments
-* =========
-*
-*/
-/* Analisis
-* ==========
-*
-*/
-struct bacalao {
-  int x, y, depth;
-};
-int xc[4] = {1, 0, -1, 0};
-int yc[4] = {0, 1, 0, -1};
-char dir[4] = {'D', 'R', 'U', 'L'};
-int bullshit[4] = {2, 3, 0, 1};
-struct bacalao1 {
-  int x, y, depth; string path;
-};
- 
+
+// node for {i, j} = i*m + j;
+// border if node%m == 0, m - 1 or node/m == 0, n - 1
+
+const int Mxn = 1e6 + 1;
+vector<pair<int, char>> Adj[Mxn];
+int t[Mxn];
+char value[Mxn];
+int dx[4] = {0, 0, 1, -1};
+int dy[4] = {-1, 1, 0, 0};
+char val[4] = {'L', 'R', 'D', 'U'};
+int dist[Mxn];
+int parent[Mxn];
+char path[Mxn];
+int root;
+int last; 
+bool flag = false;
+
 int main() {
-  cin.tie(0); ios_base::sync_with_stdio(0);
-  int n, m; cin >> n >> m; queue<bacalao> Q1;
-  char grid[n + 2][m + 2]; 
-  int val[n + 2][m + 2], prev[n + 2][n + 2];
-  bool goal[n + 2][m + 2];
-  memset(grid, '#', sizeof(grid));
-  memset(val, 1000006, sizeof(val));
-  memset(goal, false, sizeof(goal));
-  pair<int, int> begin, curr;
- 
-  for (int i = 1; i <= n; i++) {
-    for (int j = 1; j <= m; j++) {
-      cin >> grid[i][j];
-      if (grid[i][j] == '#') val[i][j] = -1;
-      if (grid[i][j] == 'M') {
-        Q1.push({i, j, 0}); val[i][j]  = -1;
+  int n, m; cin >> n >> m;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      cin >> value[i*m + j];
+    }
+  }
+  queue<int> Q;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      dist[i*m + j] = -1;
+      t[i*m + j] = Mxn;
+      if (value[i*m + j] == '#') continue;
+      if (value[i*m + j] == 'A') root = i*m + j;
+      if (value[i*m + j] == 'M') {
+        Q.push(i*m + j); t[i*m + j] = 0;
       }
-      if (grid[i][j] == 'A') begin = {i, j};
-      if ((i == 1 || j == 1 || i == n || j == m) && (grid[i][j] == '.' || grid[i][j] == 'A')) {
-        goal[i][j] = true; 
+
+      for (int k = 0; k < 4; k++) {
+        if (i + dx[k] == -1 || i + dx[k] == n) continue;
+        if (j + dy[k] == -1 || j + dy[k] == m) continue;
+        if (value[(i + dx[k])*m + j + dy[k]] == '#') continue;
+        Adj[i*m + j].push_back({(i + dx[k])*m + j + dy[k], val[k]});
       }
+
     }
   }
- 
-  while (!Q1.empty()) {
-    auto f = Q1.front();
-    Q1.pop();
-    for (int k = 0; k < 4; k++) {
-      if (grid[f.x + xc[k]][f.y + yc[k]] == '#') continue;
-      Q1.push({f.x + xc[k], f.y + yc[k], f.depth + 1});
-      grid[f.x + xc[k]][f.y + yc[k]] = '#';
-      val[f.x + xc[k]][f.y + yc[k]] = f.depth + 1;
+
+  while (Q.size()) {
+    int node = Q.front(); Q.pop();
+    for (auto [child, W] : Adj[node]) {
+      if (t[child] != Mxn) continue;
+      t[child] = t[node] + 1;
+      Q.push(child);
     }
   }
-  //for (int i = 1; i <= n; i++) {
-    //for (int j = 1; j <= m; j++) {
-      //cout << val[i][j] << " ";
-    //}
-    //cout << endl;
-  //}
-  queue<bacalao> Q; Q.push({begin.first, begin.second, 0}); bool yay = false;
-  while (!Q.empty()) {
-    auto f = Q.front();
-    if (goal[f.x][f.y]) {
-      curr = {f.x, f.y}; yay = true;
-      break;
+
+  Q.push(root); dist[root] = 0; 
+  while (Q.size()) {
+    int node = Q.front(); Q.pop();
+    if (node%m == 0 || node%m == m - 1 || node/m == 0 || node/m == n - 1) {
+      flag = true; last = node;
     }
-    Q.pop();
-    for (int k = 0; k < 4; k++) {
-      if (val[f.x + xc[k]][f.y + yc[k]] <= f.depth + 1) continue;
-      Q.push({f.x + xc[k], f.y + yc[k]});
-      val[f.x + xc[k]][f.y + yc[k]] = -1;
-      prev[f.x + xc[k]][f.y + yc[k]] = bullshit[k];
+    for (auto [child, W] : Adj[node]) {
+      if (dist[child] != -1 || t[child] <= dist[node] + 1) continue;
+      dist[child] = dist[node] + 1;
+      parent[child] = node;
+      path[child] = W;
+      Q.push(child);
     }
   }
-  if (!yay) {
-    cout << "NO\n"; return 0;
+  
+  if (!flag) {
+    cout << "NO\n";
+  } else {
+    cout << "YES\n";
+    string s; 
+    for (; last != root; last = parent[last]) {
+      s += path[last];
+    }
+    reverse(s.begin(), s.end());
+    cout << s.size() << '\n';
+    cout << s << '\n';
   }
-  string s = "";
-  while (curr != begin) {
-    int k = prev[curr.first][curr.second];
-    s += dir[bullshit[k]]; curr.first += xc[k]; curr.second += yc[k];
-  }
-  reverse(s.begin(), s.end());
-  cout << "YES\n" << (int)s.size() << "\n" << s;
+
 }
