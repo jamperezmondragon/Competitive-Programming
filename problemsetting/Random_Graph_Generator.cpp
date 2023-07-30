@@ -10,12 +10,12 @@ auto GenerateRandomGraph(int N, int M) -> vector<array<int, 2>> {
    * Es la implementación del algoritmo 1 expuesto en el siguiente artículo:
    * Batagelj, Vladimir; Brandes, Ulrik (2005). Efficient generation of large random networks.
    * doi:10.1103/PhysRevE.71.036113
+   * Thanks to nor for helping me debugging this code :).
   */
-
-  vector<array<int, 2>> Edges;
-
-  // La probabilidad adecuada para que el valor esperado sea M.
+  
   assert(2LL*M < N*1LL*(N - 1) && N > 0);
+  vector<array<int, 2>> Edges;
+  // La probabilidad adecuada para que el valor esperado sea M.
   long double p = ((long double) M*1LL*2 / (N*1LL*(N - 1)));
   int v = 1; long long int w = -1; 
   while (v < N) {
